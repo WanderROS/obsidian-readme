@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-
+import { InsertLinkModal } from "./modal";
 // Remember to rename these classes and interfaces!
 
 interface MyPluginSettings {
@@ -15,6 +15,20 @@ export default class MyPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+
+		this.addCommand({
+			id: "insert-link",
+			name: "Insert link",
+			editorCallback: (editor: Editor) => {
+			  const selectedText = editor.getSelection();
+	  
+			  const onSubmit = (text: string, url: string) => {
+				editor.replaceSelection(`[${text}](${url})`);
+			  };
+	  
+			  new InsertLinkModal(this.app, selectedText, onSubmit).open();
+			},
+		  });
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
